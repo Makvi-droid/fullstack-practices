@@ -1,0 +1,57 @@
+Setting Up the Backend (Express Server)
+
+✅ Step-by-Step Instructions:
+
+1. Create the project structure
+   - Inside your main project folder, create a backend directory:
+     mkdir backend
+     cd backend
+
+2. Initialize a Node.js project
+   - This creates a package.json file for managing dependencies:
+     npm install -y
+
+3. Install Express
+   - Express is the backend framework we'll use:
+     npm install express
+
+4. Create the server file
+   - Inside the backend folder, create a file named:
+     server.js
+
+5. (Optional) Install Nodemon globally
+   - Nodemon automatically restarts your server when changes are made:
+     npm install -g nodemon
+
+6. Write your basic Express server
+   - Open server.js and add the following code:
+
+     const express = require('express');
+
+     // Create an Express app
+     const app = express();
+
+     // Define a basic route
+     app.get('/', (req, res) => {
+       res.json({ mssg: 'Welcome to my app' });
+     });
+
+     // Start the server and check on terminal
+     app.listen(4000, () => {
+       console.log('listening on port 4000');
+     });
+
+7. Run the server
+   - From inside the backend folder, start the server using either:
+     node server.js
+   - Or, if you're using nodemon:
+     nodemon server.js
+
+8. Test the server
+   - Open your browser and go to:
+     http://localhost:4000/
+   - You should see the following JSON response:
+     { "mssg": "Welcome to my app" }
+
+9. Install dotenv
+    -In the terminal type npm install dotenv
