@@ -1,4 +1,4 @@
-Setting Up the Backend (Express Server)
+📄 Setting Up the Backend (Express + MongoDB)
 
 ✅ Step-by-Step Instructions:
 
@@ -8,50 +8,110 @@ Setting Up the Backend (Express Server)
      cd backend
 
 2. Initialize a Node.js project
-   - This creates a package.json file for managing dependencies:
-     npm install -y
+   npm install -y
 
-3. Install Express
-   - Express is the backend framework we'll use:
-     npm install express
+3. Install backend dependencies
+   npm install express dotenv mongoose
 
-4. Create the server file
-   - Inside the backend folder, create a file named:
-     server.js
+4. (Optional) Install Nodemon globally
+   npm install -g nodemon
 
-5. (Optional) Install Nodemon globally
-   - Nodemon automatically restarts your server when changes are made:
-     npm install -g nodemon
+5. Create core files
+   - server.js
+   - .env
 
-6. Write your basic Express server
-   - Open server.js and add the following code:
+6. Create folders
+   - models → contains MongoDB schema
+   - routes → contains Express route handlers
 
-     const express = require('express');
+   (create a mongoDB atlas account and create a new cluster in database)
 
-     // Create an Express app
-     const app = express();
+7. Add this to your `.env` file (create if not existing):
+   PORT=4000
+   MONGO_URI=your_mongodb_connection_string_here
 
-     // Define a basic route
-     app.get('/', (req, res) => {
-       res.json({ mssg: 'Welcome to my app' });
-     });
+8. Code for `server.js`:
 
-     // Start the server and check on terminal
-     app.listen(4000, () => {
-       console.log('listening on port 4000');
-     });
+   require('dotenv').config()
+   const express = require('express')
+   const mongoose = require('mongoose')
+   const workOutRoutes = require('./routes/workouts.js')
 
-7. Run the server
-   - From inside the backend folder, start the server using either:
+   const app = express()
+
+   // Middleware
+   app.use(express.json())
+
+   app.use((req, res, next) => {
+     console.log(req.path, req.method)
+     next()
+   })
+
+   // Routes
+   app.use('/api/workOuts', workOutRoutes)
+
+   // DB Connection
+   mongoose.connect(process.env.MONGO_URI)
+     .then(() => {
+       app.listen(process.env.PORT, () => {
+         console.log(`connected to mongoDB and listening on port ${process.env.PORT}`)
+       })
+     })
+     .catch((error) => {
+       console.log(error)
+     })
+
+9. Code for `models/workout.js`:
+
+   const mongoose = require('mongoose')
+   const Schema = mongoose.Schema
+
+   const workoutSchema = new Schema({
+     title: { type: String, required: true },
+     reps: { type: Number, required: true },
+     load: { type: Number, required: true }
+   }, { timestamps: true })
+
+   module.exports = mongoose.model('Workout', workoutSchema)
+
+10. Code for `routes/workouts.js`:
+
+   const express = require('express')
+   const router = express.Router()
+
+   router.get('/', (req, res) => {
+     res.json({ mssg: "GET all workouts" })
+   })
+
+   router.get('/:id', (req, res) => {
+     res.json({ mssg: "GET a single workout" })
+   })
+
+   router.post('/', (req, res) => {
+     res.json({ mssg: "POST a new workout" })
+   })
+
+   router.delete('/:id', (req, res) => {
+     res.json({ mssg: "DELETE a workout" })
+   })
+
+   router.patch('/:id', (req, res) => {
+     res.json({ mssg: "UPDATE a workout" })
+   })
+
+   module.exports = router
+
+11. Run the server
+   - Start with:
      node server.js
-   - Or, if you're using nodemon:
+   - Or with:
      nodemon server.js
 
-8. Test the server
-   - Open your browser and go to:
-     http://localhost:4000/
-   - You should see the following JSON response:
-     { "mssg": "Welcome to my app" }
-
-9. Install dotenv
-    -In the terminal type npm install dotenv
+12. Test endpoints
+   - Base URL: http://localhost:4000/api/workOuts
+   - Use Postman to test:
+     - GET → `/`
+     - GET → `/:id`
+     - POST → `/` with JSON body
+     - DELETE → `/:id`
+     - PATCH → `/:id`
